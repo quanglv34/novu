@@ -65,13 +65,7 @@ export class HandleAgentReply {
     if (command.reply) {
       this.ensureSerializedThread(channel);
 
-      replyInfo = await this.deliverMessage(
-        command,
-        conversation,
-        channel,
-        command.reply,
-        agentName
-      );
+      replyInfo = await this.deliverMessage(command, conversation, channel, command.reply, agentName);
 
       this.removeAckReaction(config!, conversation, channel).catch((err) => {
         this.logger.warn(err, `[agent:${command.agentIdentifier}] Failed to remove ack reaction`);
@@ -113,7 +107,9 @@ export class HandleAgentReply {
     return agent.name;
   }
 
-  private ensureSerializedThread(channel: ConversationChannel): asserts channel is ConversationChannel & { serializedThread: Record<string, unknown> } {
+  private ensureSerializedThread(
+    channel: ConversationChannel
+  ): asserts channel is ConversationChannel & { serializedThread: Record<string, unknown> } {
     if (!channel.serializedThread) {
       throw new BadRequestException('Conversation has no serialized thread — unable to deliver reply');
     }

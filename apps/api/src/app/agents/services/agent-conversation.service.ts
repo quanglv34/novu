@@ -94,7 +94,12 @@ export class AgentConversationService {
 
     if (existing) {
       if (existing.status === ConversationStatusEnum.RESOLVED) {
-        await this.conversationRepository.updateStatus(environmentId, organizationId, existing._id, ConversationStatusEnum.ACTIVE);
+        await this.conversationRepository.updateStatus(
+          environmentId,
+          organizationId,
+          existing._id,
+          ConversationStatusEnum.ACTIVE
+        );
         existing.status = ConversationStatusEnum.ACTIVE;
 
         this.logger.debug(`Reopened resolved conversation ${existing._id} for thread ${platformThreadId}`);
@@ -183,7 +188,12 @@ export class AgentConversationService {
         environmentId: params.environmentId,
         organizationId: params.organizationId,
       }),
-      this.conversationRepository.touchActivity(params.environmentId, params.organizationId, params.conversationId, params.content),
+      this.conversationRepository.touchActivity(
+        params.environmentId,
+        params.organizationId,
+        params.conversationId,
+        params.content
+      ),
     ]);
 
     return activity;
@@ -200,7 +210,13 @@ export class AgentConversationService {
     platformThreadId: string,
     serializedThread: Record<string, unknown>
   ): Promise<void> {
-    await this.conversationRepository.updateChannelThread(environmentId, organizationId, conversationId, platformThreadId, serializedThread);
+    await this.conversationRepository.updateChannelThread(
+      environmentId,
+      organizationId,
+      conversationId,
+      platformThreadId,
+      serializedThread
+    );
   }
 
   async getConversation(

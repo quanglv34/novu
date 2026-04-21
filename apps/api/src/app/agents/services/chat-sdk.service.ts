@@ -359,7 +359,9 @@ export class ChatSdkService implements OnModuleDestroy {
       }
       case AgentPlatformEnum.TEAMS: {
         if (!credentials.clientId || !credentials.secretKey || !credentials.tenantId) {
-          throw new BadRequestException('Teams agent integration requires appId, appPassword, and appTenantId credentials');
+          throw new BadRequestException(
+            'Teams agent integration requires appId, appPassword, and appTenantId credentials'
+          );
         }
 
         const { createTeamsAdapter } = await esmImport('@chat-adapter/teams');
@@ -373,7 +375,12 @@ export class ChatSdkService implements OnModuleDestroy {
         };
       }
       case AgentPlatformEnum.WHATSAPP: {
-        if (!credentials.apiToken || !credentials.secretKey || !credentials.token || !credentials.phoneNumberIdentification) {
+        if (
+          !credentials.apiToken ||
+          !credentials.secretKey ||
+          !credentials.token ||
+          !credentials.phoneNumberIdentification
+        ) {
           throw new BadRequestException(
             'WhatsApp agent integration requires accessToken, appSecret, verifyToken, and phoneNumberId credentials'
           );

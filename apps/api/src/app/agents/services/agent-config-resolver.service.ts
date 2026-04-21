@@ -9,8 +9,8 @@ import {
 } from '@novu/dal';
 import { FeatureFlagsKeysEnum } from '@novu/shared';
 import type { WellKnownEmoji } from 'chat';
-import { AgentInactiveException } from '../exceptions/agent-inactive.exception';
 import { AgentPlatformEnum } from '../dtos/agent-platform.enum';
+import { AgentInactiveException } from '../exceptions/agent-inactive.exception';
 import { esmImport } from '../utils/esm-import';
 import { resolveAgentPlatform } from '../utils/provider-to-platform';
 

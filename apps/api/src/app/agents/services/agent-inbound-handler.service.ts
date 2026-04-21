@@ -1,17 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PinoLogger } from '@novu/application-generic';
-import {
-  ConversationActivitySenderTypeEnum,
-  ConversationParticipantTypeEnum,
-  SubscriberRepository,
-} from '@novu/dal';
+import { ConversationActivitySenderTypeEnum, ConversationParticipantTypeEnum, SubscriberRepository } from '@novu/dal';
+import type { AgentAction } from '@novu/framework';
 import type { EmojiValue, Message, Thread } from 'chat';
 import { AgentEventEnum } from '../dtos/agent-event.enum';
 import { PLATFORMS_WITH_TYPING_INDICATOR } from '../dtos/agent-platform.enum';
 import { ResolvedAgentConfig } from './agent-config-resolver.service';
 import { AgentConversationService } from './agent-conversation.service';
 import { AgentSubscriberResolver } from './agent-subscriber-resolver.service';
-import type { AgentAction } from '@novu/framework';
 import { BridgeExecutorService, type BridgeReaction, NoBridgeUrlError } from './bridge-executor.service';
 
 const ACKNOWLEDGE_FALLBACK_EMOJI = 'eyes' as const;

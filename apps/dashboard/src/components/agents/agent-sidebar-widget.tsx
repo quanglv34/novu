@@ -7,6 +7,7 @@ import { RiExpandUpDownLine } from 'react-icons/ri';
 import type { AgentResponse, UpdateAgentBody } from '@/api/agents';
 import { getAgentDetailQueryKey, updateAgent } from '@/api/agents';
 import { NovuApiError } from '@/api/api.client';
+import { ConfirmationModal } from '@/components/confirmation-modal';
 import { AnimatedBadgeDot, Badge } from '@/components/primitives/badge';
 import { HelpTooltipIndicator } from '@/components/primitives/help-tooltip-indicator';
 import { Input } from '@/components/primitives/input';
@@ -15,7 +16,6 @@ import { Switch } from '@/components/primitives/switch';
 import { Textarea } from '@/components/primitives/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/primitives/tooltip';
 import { TimeDisplayHoverCard } from '@/components/time-display-hover-card';
-import { ConfirmationModal } from '@/components/confirmation-modal';
 import { requireEnvironment, useEnvironment } from '@/context/environment/hooks';
 import { useHasPermission } from '@/hooks/use-has-permission';
 import { cn } from '@/utils/ui';
@@ -56,7 +56,6 @@ function SidebarRow({
 }
 
 function TruncatedUrl({ url }: { url: string }) {
-
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -374,7 +373,12 @@ export function AgentSidebarWidget({ agent }: AgentSidebarWidgetProps) {
           </TimeDisplayHoverCard>
         </SidebarRow>
 
-        <BridgeUrlSection agent={agent} canWrite={canWrite} isUpdatePending={isUpdatePending} onUpdate={updateAgentAsync} />
+        <BridgeUrlSection
+          agent={agent}
+          canWrite={canWrite}
+          isUpdatePending={isUpdatePending}
+          onUpdate={updateAgentAsync}
+        />
 
         <div ref={descriptionContainerRef} className="flex flex-col">
           <button

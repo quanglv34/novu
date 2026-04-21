@@ -6,8 +6,8 @@ import {
 } from '@novu/dal';
 import { testServer } from '@novu/testing';
 import { expect } from 'chai';
-import sinon from 'sinon';
 import type { EmojiValue } from 'chat';
+import sinon from 'sinon';
 import { AgentEventEnum } from '../dtos/agent-event.enum';
 import { AgentConfigResolver } from '../services/agent-config-resolver.service';
 import { AgentInboundHandler, InboundReactionEvent } from '../services/agent-inbound-handler.service';

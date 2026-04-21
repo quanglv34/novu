@@ -5,7 +5,6 @@ import { Link, useLocation } from 'react-router-dom';
 import type { AgentResponse } from '@/api/agents';
 import { ProviderIcon } from '@/components/integrations/components/provider-icon';
 import { CompactButton } from '@/components/primitives/button-compact';
-import { StatusBadge, StatusBadgeIcon } from '@/components/primitives/status-badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/primitives/dropdown-menu';
 import { Skeleton } from '@/components/primitives/skeleton';
+import { StatusBadge, StatusBadgeIcon } from '@/components/primitives/status-badge';
 import {
   Table,
   TableBody,
@@ -53,7 +53,6 @@ type AgentNavTableCellProps = ComponentProps<typeof TableCell> & {
 };
 
 function AgentNavTableCell({ children, className, to, ...rest }: AgentNavTableCellProps) {
-
   return (
     <TableCell className={cn('group-hover:bg-neutral-alpha-50 text-text-sub relative', className)} {...rest}>
       {to ? (
