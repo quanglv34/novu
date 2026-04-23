@@ -1,5 +1,9 @@
+import { randomBytes } from 'node:crypto';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { encryptSecret } from '@novu/application-generic';
 import { AgentIntegrationRepository, AgentRepository, IntegrationRepository } from '@novu/dal';
+import { EmailProviderIdEnum } from '@novu/shared';
+
 import type { AgentIntegrationResponseDto } from '../../dtos';
 import { toAgentIntegrationResponse } from '../../mappers/agent-response.mapper';
 import { AddAgentIntegrationCommand } from './add-agent-integration.command';
@@ -53,6 +57,10 @@ export class AddAgentIntegration {
       throw new ConflictException('This integration is already linked to the agent.');
     }
 
+    if (integration.providerId === EmailProviderIdEnum.NovuAgent) {
+      await this.prepareNovuEmailIntegration(agent._id, integration._id, command);
+    }
+
     const link = await this.agentIntegrationRepository.create({
       _agentId: agent._id,
       _integrationId: integration._id,
@@ -61,5 +69,63 @@ export class AddAgentIntegration {
     });
 
     return toAgentIntegrationResponse(link, integration);
+  }
+
+  /**
+   * Enforces the singleton constraint (one NovuAgent email integration per
+   * agent) and seeds the `secretKey` credential the email adapter needs for
+   * HMAC verification of inbound webhook payloads.
+   */
+  private async prepareNovuEmailIntegration(
+    agentId: string,
+    integrationId: string,
+    command: AddAgentIntegrationCommand
+  ): Promise<void> {
+    await this.enforceSingletonEmail(agentId, command);
+    await this.seedEmailSecretKey(integrationId, command.environmentId, command.organizationId);
+  }
+
+  private async enforceSingletonEmail(
+    agentId: string,
+    command: AddAgentIntegrationCommand
+  ): Promise<void> {
+    const existingLinks = await this.agentIntegrationRepository.find(
+      {
+        _agentId: agentId,
+        _environmentId: command.environmentId,
+        _organizationId: command.organizationId,
+      },
+      '*'
+    );
+
+    if (existingLinks.length === 0) return;
+
+    const linkedIntegrationIds = existingLinks.map((link) => link._integrationId);
+    const linkedEmailIntegrations = await this.integrationRepository.find(
+      {
+        _id: { $in: linkedIntegrationIds },
+        _environmentId: command.environmentId,
+        _organizationId: command.organizationId,
+        providerId: EmailProviderIdEnum.NovuAgent,
+      },
+      '_id'
+    );
+
+    if (linkedEmailIntegrations.length > 0) {
+      throw new ConflictException('Only one email integration per agent is allowed.');
+    }
+  }
+
+  private async seedEmailSecretKey(
+    integrationId: string,
+    environmentId: string,
+    organizationId: string
+  ): Promise<void> {
+    const dedicatedSecret = randomBytes(32).toString('hex');
+
+    await this.integrationRepository.update(
+      { _id: integrationId, _environmentId: environmentId, _organizationId: organizationId },
+      { $set: { 'credentials.secretKey': encryptSecret(dedicatedSecret) } }
+    );
   }
 }
