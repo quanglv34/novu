@@ -287,7 +287,7 @@ export const SideNavigation = () => {
                     </NavigationLink>
                   </Protect>
                 )}
-                {isDomainsPageEnabled && IS_ENTERPRISE && (
+                {isDomainsPageEnabled && !IS_SELF_HOSTED && (
                   <NavigationLink
                     to={
                       currentEnvironment?.slug
