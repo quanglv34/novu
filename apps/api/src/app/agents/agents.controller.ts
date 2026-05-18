@@ -54,6 +54,8 @@ import {
 import { ConfigureTelegramWebhookResponseDto } from './dtos/configure-telegram-webhook-response.dto';
 import { ConfigureWhatsAppWebhookResponseDto } from './dtos/configure-whatsapp-webhook-response.dto';
 import { IssueTelegramMobileLinkResponseDto } from './dtos/issue-telegram-mobile-link-response.dto';
+import { IssueTelegramSubscriberLinkRequestDto } from './dtos/issue-telegram-subscriber-link-request.dto';
+import { IssueTelegramSubscriberLinkResponseDto } from './dtos/issue-telegram-subscriber-link-response.dto';
 import { SendAgentTestEmailRequestDto } from './dtos/send-agent-test-email-request.dto';
 import { SendAgentWelcomeMessageRequestDto } from './dtos/send-agent-welcome-message-request.dto';
 import {
@@ -78,6 +80,8 @@ import { GetAgentRuntimeConfigCommand } from './usecases/get-agent-runtime-confi
 import { GetAgentRuntimeConfig } from './usecases/get-agent-runtime-config/get-agent-runtime-config.usecase';
 import { IssueTelegramMobileLinkCommand } from './usecases/issue-telegram-mobile-link/issue-telegram-mobile-link.command';
 import { IssueTelegramMobileLink } from './usecases/issue-telegram-mobile-link/issue-telegram-mobile-link.usecase';
+import { IssueTelegramSubscriberLinkCommand } from './usecases/issue-telegram-subscriber-link/issue-telegram-subscriber-link.command';
+import { IssueTelegramSubscriberLink } from './usecases/issue-telegram-subscriber-link/issue-telegram-subscriber-link.usecase';
 import { type AgentEmojiEntry, ListAgentEmoji } from './usecases/list-agent-emoji/list-agent-emoji.usecase';
 import { ListAgentIntegrationsCommand } from './usecases/list-agent-integrations/list-agent-integrations.command';
 import { ListAgentIntegrations } from './usecases/list-agent-integrations/list-agent-integrations.usecase';
@@ -127,6 +131,7 @@ export class AgentsController {
     private readonly sendWhatsAppTestTemplateUsecase: SendWhatsAppTestTemplate,
     private readonly configureTelegramAgentWebhookUsecase: ConfigureTelegramAgentWebhook,
     private readonly issueTelegramMobileLinkUsecase: IssueTelegramMobileLink,
+    private readonly issueTelegramSubscriberLinkUsecase: IssueTelegramSubscriberLink,
     private readonly updateAgentInboxSharedUsecase: UpdateAgentInboxShared
   ) {}
 
@@ -501,6 +506,38 @@ export class AgentsController {
         organizationId: user.organizationId,
         agentIdentifier: identifier,
         integrationId,
+      })
+    );
+  }
+
+  @Post('/:identifier/integrations/:integrationId/telegram/subscriber-link')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse(IssueTelegramSubscriberLinkResponseDto, 200)
+  @ApiOperation({
+    summary: 'Issue a Telegram subscriber-link deep link',
+    description:
+      'Issues a short-lived opaque start code and returns a Telegram `t.me/<bot>?start=<code>` deep link. When ' +
+      'opened, Telegram sends `/start <code>` to the bot; the agent webhook consumes the code server-side and ' +
+      'creates a `telegram_chat` channel endpoint so notifications can reach that subscriber via Telegram.',
+  })
+  @ApiNotFoundResponse({
+    description: 'The agent, integration, agent-integration link, or subscriber was not found.',
+  })
+  @RequirePermissions(PermissionsEnum.AGENT_WRITE)
+  createTelegramSubscriberLink(
+    @UserSession() user: UserSessionData,
+    @Param('identifier') identifier: string,
+    @Param('integrationId') integrationId: string,
+    @Body() body: IssueTelegramSubscriberLinkRequestDto
+  ): Promise<IssueTelegramSubscriberLinkResponseDto> {
+    return this.issueTelegramSubscriberLinkUsecase.execute(
+      IssueTelegramSubscriberLinkCommand.create({
+        userId: user._id,
+        environmentId: user.environmentId,
+        organizationId: user.organizationId,
+        agentIdentifier: identifier,
+        integrationId,
+        subscriberId: body.subscriberId,
       })
     );
   }

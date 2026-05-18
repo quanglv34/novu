@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { CalculateLimitNovuIntegration } from '@novu/application-generic';
+import {
+  CalculateLimitNovuIntegration,
+  CreateOrUpdateSubscriberUseCase,
+  UpdateSubscriber,
+  UpdateSubscriberChannel,
+} from '@novu/application-generic';
 import {
   ChannelConnectionRepository,
   ChannelEndpointRepository,
@@ -8,9 +13,11 @@ import {
   ConversationRepository,
   IntegrationRepository,
   MessageRepository,
+  SubscriberRepository,
 } from '@novu/dal';
 
 import { AuthModule } from '../auth/auth.module';
+import { ChannelEndpointsModule } from '../channel-endpoints/channel-endpoints.module';
 import { EventsModule } from '../events/events.module';
 import { SharedModule } from '../shared/shared.module';
 import { AgentEmailActionsController } from './agent-email-actions.controller';
@@ -28,6 +35,7 @@ import { BridgeExecutorService } from './services/bridge-executor.service';
 import { ChatSdkService } from './services/chat-sdk.service';
 import { ManagedExecutorService } from './services/managed-executor.service';
 import { TelegramMobileLinkTokenService } from './services/telegram-mobile-link-token.service';
+import { TelegramStartCodeService } from './services/telegram-start-code.service';
 import { USE_CASES } from './usecases';
 
 @Module({
@@ -35,6 +43,7 @@ import { USE_CASES } from './usecases';
     SharedModule,
     AuthModule,
     EventsModule,
+    ChannelEndpointsModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
@@ -49,6 +58,7 @@ import { USE_CASES } from './usecases';
     ConversationActivityRepository,
     IntegrationRepository,
     MessageRepository,
+    SubscriberRepository,
     AgentAttachmentStorage,
     AgentConfigResolver,
     AgentSubscriberResolver,
@@ -59,7 +69,11 @@ import { USE_CASES } from './usecases';
     ManagedExecutorService,
     ChatSdkService,
     TelegramMobileLinkTokenService,
+    TelegramStartCodeService,
     CalculateLimitNovuIntegration,
+    CreateOrUpdateSubscriberUseCase,
+    UpdateSubscriber,
+    UpdateSubscriberChannel,
   ],
   exports: [...USE_CASES, ChatSdkService],
 })
