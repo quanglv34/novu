@@ -1,10 +1,9 @@
 import { Injectable, type OnModuleInit } from '@nestjs/common';
 import type { PendingToolApproval } from '@novu/application-generic';
 import {
-  decryptCredentials,
-  getAgentRuntimeProvider,
   type IAgentRuntimeProvider,
   PinoLogger,
+  resolveAgentRuntime,
 } from '@novu/application-generic';
 import {
   type AgentEntity,
@@ -38,6 +37,7 @@ import { HandleAgentReply } from '../usecases/handle-agent-reply/handle-agent-re
 import { HandleToolProgressCommand } from '../usecases/handle-tool-progress/handle-tool-progress.command';
 import { HandleToolProgress } from '../usecases/handle-tool-progress/handle-tool-progress.usecase';
 import type { AgentExecutionParams } from './bridge-executor.service';
+import { DemoClaudeQuotaPolicy } from './demo-claude-quota-policy.service';
 
 /**
  * Webhook metadata persisted on the Cloudflare durable session and replayed
@@ -71,12 +71,6 @@ type WebhookSessionMetadata = {
 interface CachedRuntime {
   provider: WebhookProvider;
   runtimeProvider: IAgentRuntimeProvider;
-  // Anthropic-side vault that holds OAuth credentials for this integration's
-  // MCP servers. Sessions must opt-in to vaults via `SessionCreateParams.vault_ids`
-  // (otherwise Anthropic reports "no credential is stored" no matter how
-  // perfectly the credential is provisioned). We cache it alongside the
-  // provider so every `send` call can hand it to the Thalamus SDK as
-  // `vaultIds`, which forwards it to `beta.sessions.create`.
   vaultIds: string[];
 }
 
@@ -116,6 +110,7 @@ export class ManagedAgentService implements OnModuleInit {
     private readonly handleAgentReply: HandleAgentReply,
     private readonly handleToolProgress: HandleToolProgress,
     private readonly generateMcpOAuthUrl: GenerateMcpOAuthUrl,
+    private readonly demoQuota: DemoClaudeQuotaPolicy,
     private readonly logger: PinoLogger
   ) {
     this.logger.setContext(this.constructor.name);
@@ -130,6 +125,8 @@ export class ManagedAgentService implements OnModuleInit {
   }
 
   async dispatch(context: AgentExecutionParams, agent: Pick<AgentEntity, '_id' | 'managedRuntime'>): Promise<void> {
+    await this.demoQuota.assertAllowed(context, agent);
+
     const { provider, vaultIds } = await this.getOrCreateProvider(agent, context.config.environmentId);
     const sessionId = context.conversation.externalSessionId ?? undefined;
 
@@ -609,19 +606,22 @@ export class ManagedAgentService implements OnModuleInit {
       throw new Error(`Integration ${agent.managedRuntime._integrationId} not found or has no credentials`);
     }
 
-    const creds = decryptCredentials(integration.credentials);
-    if (!creds.apiKey) {
-      throw new Error('Integration has no API key');
+    const resolved = resolveAgentRuntime(integration.providerId, integration.credentials);
+
+    if (!resolved) {
+      throw new Error('Integration has no API key configured');
     }
+
+    const { apiKey, credentials: creds, provider: runtimeProvider } = resolved;
+
     if (!creds.externalEnvironmentId) {
       throw new Error('Integration has no external environment id');
     }
 
-    const runtimeProvider = getAgentRuntimeProvider(agent.managedRuntime.providerId, creds.apiKey);
-    const provider = this.createProvider(agent.managedRuntime.providerId, {
-      apiKey: creds.apiKey,
+    const provider = this.createProvider(integration.providerId as AgentRuntimeProviderIdEnum, {
+      apiKey,
       agentId: agent.managedRuntime.externalAgentId,
-      environmentId: creds.externalEnvironmentId,
+      environmentId: creds.externalEnvironmentId as string,
     });
     const vaultIds = creds.externalVaultId ? [creds.externalVaultId as string] : [];
     const runtime: CachedRuntime = { provider, runtimeProvider, vaultIds };
@@ -646,13 +646,14 @@ export class ManagedAgentService implements OnModuleInit {
 
     switch (providerId) {
       case AgentRuntimeProviderIdEnum.Anthropic:
+      case AgentRuntimeProviderIdEnum.NovuAnthropic:
         return thalamus.anthropic({
           ...config,
           durable: cloudflare({
             url: cfUrl,
             apiKey: process.env.THALAMUS_CF_API_KEY,
             webhook: {
-              url: `${process.env.API_ROOT_URL}/v1/agents/events`,
+              url: `${process.env.AGENT_API_HOSTNAME ?? process.env.API_ROOT_URL}/v1/agents/events`,
               secret: webhookSecret,
             },
           }),
@@ -764,6 +765,12 @@ export class ManagedAgentService implements OnModuleInit {
 
               await this.handleAgentReply.execute(
                 HandleAgentReplyCommand.create({ ...baseFields, reply: { markdown: event.response.content } })
+              );
+              await this.demoQuota.recordUsage(
+                metadata.environmentId,
+                metadata.organizationId,
+                metadata.conversationId,
+                event.response.usage
               );
               await this.handleToolProgress.execute(
                 HandleToolProgressCommand.create({ ...baseFields, toolProgress: { runId, action: 'complete' } })
