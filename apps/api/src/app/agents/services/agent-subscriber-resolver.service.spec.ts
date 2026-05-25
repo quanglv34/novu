@@ -10,12 +10,7 @@ describe('AgentSubscriberResolver', () => {
     integrationIdentifier: 'integration-main',
   };
 
-  function makeResolver(
-    overrides: {
-      findByPlatformIdentity?: sinon.SinonStub;
-      findByPhone?: sinon.SinonStub;
-    } = {}
-  ) {
+  function makeResolver(overrides: { findByPlatformIdentity?: sinon.SinonStub; findByPhone?: sinon.SinonStub } = {}) {
     const channelEndpointRepository = {
       findByPlatformIdentity: overrides.findByPlatformIdentity ?? sinon.stub().resolves(null),
     };
@@ -52,8 +47,9 @@ describe('AgentSubscriberResolver', () => {
       });
 
       expect(result).to.equal('sub-1');
-      expect(subscriberRepository.findByPhone.calledOnceWith('env-1', 'org-1', ['+972541111111', '972541111111'])).to
-        .equal(true);
+      expect(
+        subscriberRepository.findByPhone.calledOnceWith('env-1', 'org-1', ['+972541111111', '972541111111'])
+      ).to.equal(true);
       expect(channelEndpointRepository.findByPlatformIdentity.called).to.equal(false);
     });
 
@@ -69,8 +65,9 @@ describe('AgentSubscriberResolver', () => {
       });
 
       expect(result).to.equal('sub-1');
-      expect(subscriberRepository.findByPhone.calledOnceWith('env-1', 'org-1', ['+972541111111', '972541111111'])).to
-        .equal(true);
+      expect(
+        subscriberRepository.findByPhone.calledOnceWith('env-1', 'org-1', ['+972541111111', '972541111111'])
+      ).to.equal(true);
     });
 
     it('should return null when no subscriber matches', async () => {
