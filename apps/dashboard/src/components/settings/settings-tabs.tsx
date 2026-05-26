@@ -43,6 +43,8 @@ type SettingsTabsProps = {
    * this URL we default to the account tab.
    */
   rootRoute: string;
+  // Hides the Billing tab and its inline upgrade prompts. Used by Connect.
+  hideBilling?: boolean;
 };
 
 const getClerkComponentAppearance = (isRbacEnabled: boolean): ClerkAppearanceTheme => ({
@@ -112,7 +114,7 @@ function resolveCurrentTab(pathname: string, routes: SettingsTabRoutes, rootRout
   return entry?.[0] ?? 'account';
 }
 
-export function SettingsTabs({ routes, rootRoute }: SettingsTabsProps) {
+export function SettingsTabs({ routes, rootRoute, hideBilling = false }: SettingsTabsProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { subscription } = useFetchSubscription();
@@ -124,7 +126,7 @@ export function SettingsTabs({ routes, rootRoute }: SettingsTabsProps) {
   const clerkAppearance = useMemo(() => getClerkComponentAppearance(isRbacEnabled), [isRbacEnabled]);
   const UserProfile = EE_AUTH_PROVIDER === 'clerk' ? ClerkUserProfile : BetterAuthUserProfile;
 
-  const canShowBilling = !IS_SELF_HOSTED && hasBillingPermission;
+  const canShowBilling = !IS_SELF_HOSTED && hasBillingPermission && !hideBilling;
 
   const currentTab = resolveCurrentTab(location.pathname, routes, rootRoute);
 
