@@ -13,7 +13,7 @@ import {
   listAgentMcpServers,
 } from '@/api/agents';
 import { NovuApiError } from '@/api/api.client';
-import { getMcpIcon } from '@/components/icons/mcp';
+import { McpIcon } from '@/components/agents/mcp-icon';
 import { Button } from '@/components/primitives/button';
 import { CompactButton } from '@/components/primitives/button-compact';
 import { Skeleton } from '@/components/primitives/skeleton';
@@ -194,7 +194,6 @@ export function McpsSection({ agent }: McpsSectionProps) {
             {enabledServers.map((enablement) => {
               const catalog = MCP_CATALOG_BY_ID.get(enablement.mcpId);
               const displayName = catalog?.name ?? enablement.mcpId;
-              const Icon = getMcpIcon(catalog?.id ?? enablement.mcpId);
               const isProviderManaged = enablement.defaultAuthMode === McpConnectionAuthModeEnum.ProviderManaged;
               const isRowPending = pendingRemovalId === enablement.mcpId;
               const isRowVaultOpening = pendingVaultId === enablement.mcpId;
@@ -208,7 +207,7 @@ export function McpsSection({ agent }: McpsSectionProps) {
                   )}
                   aria-busy={isRowPending || isRowVaultOpening || undefined}
                 >
-                  {Icon ? <Icon className="size-5 shrink-0" aria-hidden /> : null}
+                  <McpIcon mcpId={catalog?.id ?? enablement.mcpId} />
                   <span className="text-text-sub text-label-sm min-w-0 flex-1 truncate font-medium">{displayName}</span>
                   {isProviderManaged ? (
                     <div className="flex shrink-0 items-center gap-0.5">

@@ -215,9 +215,7 @@ export function AgentsSetupPage() {
     return {
       usecase: 'agents' as const,
       setupComplete,
-      runtime: connectSummary
-        ? (getConnectorById(connectSummary.connectorId)?.runtime ?? 'scratch')
-        : undefined,
+      runtime: connectSummary ? (getConnectorById(connectSummary.connectorId)?.runtime ?? 'scratch') : undefined,
       connectorId: connectSummary?.connectorId,
       providerId: connectedProviderId,
       source: 'web' as const,

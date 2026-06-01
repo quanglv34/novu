@@ -12,7 +12,7 @@ import {
   setAgentMcpServers,
 } from '@/api/agents';
 import { NovuApiError } from '@/api/api.client';
-import { getMcpIcon } from '@/components/icons/mcp';
+import { McpIcon } from '@/components/agents/mcp-icon';
 import { Badge } from '@/components/primitives/badge';
 import { Button } from '@/components/primitives/button';
 import { CompactButton } from '@/components/primitives/button-compact';
@@ -582,7 +582,6 @@ function McpRow({
   onProviderManagedAdd,
   onRemove,
 }: McpRowProps) {
-  const Icon = getMcpIcon(entry.id);
   const badgeKind = getMcpBadgeKind(entry, badgeKindOptions);
   const isStagedSavable = badgeKind === 'oauth';
   const isProviderManaged = badgeKind === 'provider-managed';
@@ -594,7 +593,7 @@ function McpRow({
   const row = (
     <div className="flex items-center gap-3 py-1">
       <div className="flex min-w-0 flex-1 items-center gap-1">
-        {Icon ? <Icon className="size-5 shrink-0" aria-hidden /> : null}
+        <McpIcon mcpId={entry.id} />
         <span
           className={
             isActionable

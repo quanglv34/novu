@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { setTimeout } from 'node:timers/promises';
 import { EmailProviderIdEnum, isOutboundSsrfProtectionEnabled } from '@novu/shared';
 import { safeOutboundJsonRequest } from '@novu/shared/utils/safe-outbound-http';
 import {
@@ -15,7 +16,6 @@ import {
   ISendMessageSuccessResponse,
 } from '@novu/stateless';
 import axios from 'axios';
-import { setTimeout } from 'node:timers/promises';
 import { BaseProvider, CasingEnum } from '../../../base.provider';
 import { WithPassthrough } from '../../../utils/types';
 

@@ -55,8 +55,7 @@ export const getEnvVariable = (name: string, context?: unknown): string => {
 
 export type EEAuthProvider = 'clerk' | 'better-auth';
 
-export const isEEAuthEnabled = () =>
-  process.env.NOVU_ENTERPRISE === 'true' || process.env.CI_EE_TEST === 'true';
+export const isEEAuthEnabled = () => process.env.NOVU_ENTERPRISE === 'true' || process.env.CI_EE_TEST === 'true';
 
 export const getEEAuthProvider = (): EEAuthProvider => {
   const provider = process.env.EE_AUTH_PROVIDER as EEAuthProvider | undefined;
@@ -73,8 +72,7 @@ export const isBetterAuthEnabled = () => isEEAuthEnabled() && getEEAuthProvider(
  * Self-hosted and community deployments may intentionally target internal URLs.
  */
 export const isOutboundSsrfProtectionEnabled = (): boolean => {
-  const isEnterprise =
-    getEnvVariable('NOVU_ENTERPRISE') === 'true' || getEnvVariable('CI_EE_TEST') === 'true';
+  const isEnterprise = getEnvVariable('NOVU_ENTERPRISE') === 'true' || getEnvVariable('CI_EE_TEST') === 'true';
   const isSelfHosted = getEnvVariable('IS_SELF_HOSTED') === 'true';
 
   return isEnterprise && !isSelfHosted;

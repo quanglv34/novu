@@ -8,11 +8,7 @@ type ConnectSwitchConfirmationModalProps = {
   onConfirm: () => void;
 };
 
-export function ConnectSwitchConfirmationModal({
-  open,
-  onOpenChange,
-  onConfirm,
-}: ConnectSwitchConfirmationModalProps) {
+export function ConnectSwitchConfirmationModal({ open, onOpenChange, onConfirm }: ConnectSwitchConfirmationModalProps) {
   return (
     <ConfirmationModal
       open={open}

@@ -9,7 +9,7 @@ import { useTelemetry } from '@/hooks/use-telemetry';
 import { buildRoute, ROUTES } from '@/utils/routes';
 import { TelemetryEvent } from '@/utils/telemetry';
 import { cn } from '@/utils/ui';
-import { useConnectSetupSteps, type ConnectSetupStepId } from './use-connect-setup-steps';
+import { type ConnectSetupStepId, useConnectSetupSteps } from './use-connect-setup-steps';
 
 const CONNECT_SETUP_COMPLETED_STEPS_KEY = 'novu_connect_setup_completed_steps';
 

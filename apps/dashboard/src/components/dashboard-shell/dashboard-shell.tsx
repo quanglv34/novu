@@ -18,6 +18,7 @@ import {
 import { buildRoute, ROUTES } from '@/utils/routes';
 import { cn } from '@/utils/ui';
 import { useCommandPalette } from '../command-palette/hooks/use-command-palette';
+import { BetaBadge } from '../primitives/beta-badge';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,7 +28,6 @@ import {
   BreadcrumbSeparator,
 } from '../primitives/breadcrumb';
 import { Button } from '../primitives/button';
-import { BetaBadge } from '../primitives/beta-badge';
 import { Kbd } from '../primitives/kbd';
 import { AppRail } from './app-rail';
 import { useConnectBreadcrumbLeaf } from './use-connect-breadcrumb';
@@ -69,11 +69,7 @@ type ConnectBreadcrumbEntry = {
   to?: string;
 };
 
-function shouldShowConnectBreadcrumbBeta(
-  itemKey: string,
-  connectSection: ConnectSectionId,
-  isLast: boolean
-): boolean {
+function shouldShowConnectBreadcrumbBeta(itemKey: string, connectSection: ConnectSectionId, isLast: boolean): boolean {
   if (itemKey === 'root') {
     return true;
   }
