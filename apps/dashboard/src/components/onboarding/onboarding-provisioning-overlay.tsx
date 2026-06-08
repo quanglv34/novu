@@ -27,8 +27,9 @@ function readSession(): ProvisioningSession | null {
 }
 
 /**
- * Single full-screen onboarding provisioning state that stays mounted across org-list → onboarding
- * so the loader never remounts mid-flow. Shows the platform or connect variant based on session.
+ * Single full-screen onboarding provisioning state that stays mounted across org-list → usecase →
+ * destination so the loader never remounts mid-flow. Shows the platform or agents variant based on
+ * the active provisioning session.
  */
 export function OnboardingProvisioningOverlay() {
   const [session, setSession] = useState<ProvisioningSession | null>(readSession);
@@ -61,7 +62,7 @@ export function OnboardingProvisioningOverlay() {
   }
 
   return (
-    <div className={`fixed inset-0 z-[200] flex items-center justify-center ${AUTH_BACKGROUND_CLASS}`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${AUTH_BACKGROUND_CLASS}`}>
       <OnboardingLoader variant={session.variant} startedAt={session.startedAt} />
     </div>
   );
