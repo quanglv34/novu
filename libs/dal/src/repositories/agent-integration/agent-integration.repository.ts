@@ -18,6 +18,57 @@ export class AgentIntegrationRepository extends BaseRepositoryV2<
   }
 
   /**
+   * Distinct integration ids (channels) that are connected in the environment,
+   * ordered by the earliest time each channel became connected (stable, ascending).
+   *
+   * A "channel" is a distinct `_integrationId` — the same integration linked to
+   * multiple agents counts once. Used for active-channel plan-limit enforcement,
+   * where the first N channels (by connection order) are within the plan limit.
+   * Counting is per environment so a channel promoted (synced) to production
+   * does not consume a second plan slot for the same logical channel.
+   *
+   * Links whose integration was (soft-)deleted from the integration store are
+   * excluded — a removed channel must not consume a plan slot, and stale links
+   * may exist for integrations deleted before link cleanup was introduced.
+   * Tombstoned (disconnected) links are excluded explicitly: the schema-level
+   * exclusion hook does not apply to aggregation pipelines.
+   */
+  async listConnectedIntegrationIdsForEnvironment(organizationId: string, environmentId: string): Promise<string[]> {
+    const result = await this.aggregate([
+      {
+        $match: {
+          _organizationId: this.convertStringToObjectId(organizationId),
+          _environmentId: this.convertStringToObjectId(environmentId),
+          connectedAt: { $ne: null },
+          disconnectedAt: null,
+        },
+      },
+      {
+        $lookup: {
+          from: 'integrations',
+          localField: '_integrationId',
+          foreignField: '_id',
+          as: 'integration',
+        },
+      },
+      {
+        $match: {
+          integration: { $elemMatch: { deleted: { $ne: true } } },
+        },
+      },
+      {
+        $group: {
+          _id: '$_integrationId',
+          firstConnectedAt: { $min: '$connectedAt' },
+        },
+      },
+      { $sort: { firstConnectedAt: 1, _id: 1 } },
+    ]);
+
+    return (result as Array<{ _id: unknown }>).map((row) => String(row._id));
+  }
+
+  /**
    * Tombstones an active link instead of deleting it, so the inbound-webhook
    * heal can tell a deliberate disconnect apart from a never-linked orphan.
    * Returns the link as it was before the update, or null when no active link matched.
