@@ -16,4 +16,5 @@ export const chatProviderSchemas = {
   'whatsapp-business': genericProviderSchemas,
   zulip: genericProviderSchemas,
   telegram: genericProviderSchemas,
+  'zalo-one-sms': genericProviderSchemas,
 } as const satisfies Record<ChatProviderIdEnum, { output: JsonSchema }>;

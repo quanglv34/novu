@@ -161,6 +161,7 @@ export enum SmsProviderIdEnum {
   IMedia = 'imedia',
   Sinch = 'sinch',
   ISendProSms = 'isendpro-sms',
+  Viettel = 'viettel',
 }
 
 export enum ChatProviderIdEnum {
@@ -176,6 +177,7 @@ export enum ChatProviderIdEnum {
   WhatsAppBusiness = 'whatsapp-business',
   ChatWebhook = 'chat-webhook',
   Telegram = 'telegram',
+  ZaloOneSms = 'zalo-one-sms',
 }
 
 export enum PushProviderIdEnum {

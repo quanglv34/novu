@@ -11,6 +11,7 @@ import { RyverHandler } from './handlers/ryver.handler';
 import { SlackHandler } from './handlers/slack.handler';
 import { TelegramHandler } from './handlers/telegram.handler';
 import { WhatsAppBusinessHandler } from './handlers/whatsapp-business.handler';
+import { ZaloOneSmsHandler } from './handlers/zalo-one-sms.handler';
 import { ZulipHandler } from './handlers/zulip.handler';
 import { IChatFactory, IChatHandler } from './interfaces';
 
@@ -29,6 +30,7 @@ export class ChatFactory implements IChatFactory {
     new RocketChatHandler(),
     new WhatsAppBusinessHandler(),
     new TelegramHandler(),
+    new ZaloOneSmsHandler(),
   ];
 
   getHandler(integration: Pick<IntegrationEntity, 'credentials' | 'channel' | 'providerId' | 'configurations'>) {

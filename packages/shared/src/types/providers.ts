@@ -129,6 +129,7 @@ export enum SmsProviderIdEnum {
   Sinch = 'sinch',
   ISendProSms = 'isendpro-sms',
   CmTelecom = 'cm-telecom',
+  Viettel = 'viettel',
 }
 
 export enum ChatProviderIdEnum {
@@ -145,6 +146,7 @@ export enum ChatProviderIdEnum {
   ChatWebhook = 'chat-webhook',
   Novu = 'novu-slack',
   Telegram = 'telegram',
+  ZaloOneSms = 'zalo-one-sms',
 }
 
 export enum PushProviderIdEnum {

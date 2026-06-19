@@ -38,6 +38,7 @@ import {
   termiiConfig,
   twilioConfig,
   unifonicConfig,
+  viettelConfig,
 } from '../credentials';
 import { IProviderConfig } from '../provider.interface';
 
@@ -349,5 +350,13 @@ export const smsProviders: IProviderConfig[] = [
     credentials: cmTelecomConfig,
     docReference: 'https://developers.cm.com/messaging/docs/sms',
     logoFileName: { light: 'cm-telecom.svg', dark: 'cm-telecom.svg' },
+  },
+  {
+    id: SmsProviderIdEnum.Viettel,
+    displayName: 'Viettel SMS',
+    channel: ChannelTypeEnum.SMS,
+    credentials: viettelConfig,
+    docReference: 'https://apismsbrandname.viettelai.vn',
+    logoFileName: { light: 'viettel.svg', dark: 'viettel.svg' },
   },
 ];

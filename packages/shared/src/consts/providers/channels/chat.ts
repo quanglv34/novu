@@ -9,6 +9,7 @@ import {
   slackConfigLegacy,
   telegramConfig,
   whatsAppBusinessConfig,
+  zaloOneSmsConfig,
 } from '../credentials';
 import { IConfigCredential, IProviderConfig } from '../provider.interface';
 
@@ -117,5 +118,13 @@ export const chatProviders: IProviderConfig[] = [
     credentials: telegramConfig,
     docReference: `https://docs.novu.co/platform/integrations/chat/telegram${UTM_CAMPAIGN_QUERY_PARAM}`,
     logoFileName: { light: 'telegram.svg', dark: 'telegram.svg' },
+  },
+  {
+    id: ChatProviderIdEnum.ZaloOneSms,
+    displayName: 'Zalo OneSMS',
+    channel: ChannelTypeEnum.CHAT,
+    credentials: zaloOneSmsConfig,
+    docReference: 'https://zaloapi.conek.vn',
+    logoFileName: { light: 'zalo-one-sms.svg', dark: 'zalo-one-sms.svg' },
   },
 ];

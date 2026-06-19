@@ -1316,6 +1316,30 @@ export const whatsAppBusinessConfig: IConfigCredential[] = [
   },
 ];
 
+export const zaloOneSmsConfig: IConfigCredential[] = [
+  {
+    key: CredentialsKeyEnum.User,
+    displayName: 'Username',
+    description: 'Your Zalo OneSMS (conek.vn) account username',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.Password,
+    displayName: 'Password',
+    description: 'Your Zalo OneSMS (conek.vn) account password',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.SenderName,
+    displayName: 'Brandname',
+    description: 'Your registered Zalo ZNS brandname / Official Account name',
+    type: 'string',
+    required: true,
+  },
+];
+
 export const mobishastraConfig: IConfigCredential[] = [
   {
     key: CredentialsKeyEnum.BaseUrl,
@@ -1335,6 +1359,31 @@ export const mobishastraConfig: IConfigCredential[] = [
     displayName: 'Password',
     type: 'string',
     description: ' provided by Mobishastra',
+    required: true,
+  },
+  ...smsConfigBase,
+];
+
+export const viettelConfig: IConfigCredential[] = [
+  {
+    key: CredentialsKeyEnum.BaseUrl,
+    displayName: 'Base URL',
+    description: 'Viettel SMS Brandname API base URL, e.g. https://apismsbrandname.viettelai.vn:8000',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.User,
+    displayName: 'Username',
+    description: 'Username provided by Viettel',
+    type: 'string',
+    required: true,
+  },
+  {
+    key: CredentialsKeyEnum.Password,
+    displayName: 'Password',
+    description: 'Password provided by Viettel',
+    type: 'string',
     required: true,
   },
   ...smsConfigBase,
